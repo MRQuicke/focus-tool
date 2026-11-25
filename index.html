@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Focus">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Focus – Productivity</title>
+</head>
+<body>
+<header class="topbar"><h1 id="title">Tasks</h1><span id="sub" class="sub"></span></header>
+<main id="view"></main>
+
+<nav class="tabbar" id="tabbar">
+  <button data-tab="tasks" class="on"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg><span>Tasks</span></button>
+  <button data-tab="matrix"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg><span>Matrix</span></button>
+  <button data-tab="calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Calendar</span></button>
+  <button data-tab="focus"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 3h6"/></svg><span>Focus</span></button>
+</nav>
+
+<dialog id="editor">
+  <form method="dialog" id="editForm">
+    <h2 id="editTitle">New task</h2>
+    <input name="title" placeholder="What needs doing?" required autocomplete="off">
+    <div class="qpick" id="qpick"></div>
+    <div class="row">
+      <label>Date<input type="date" name="date"></label>
+      <label>Time<input type="time" name="time"></label>
+    </div>
+    <label>Duration (minutes)<input type="number" name="dur" min="5" step="5" placeholder="30"></label>
+    <div class="actions">
+      <button type="button" id="delBtn" class="danger">Delete</button>
+      <span class="grow"></span>
+      <button type="button" id="cancelBtn">Cancel</button>
+      <button type="submit" class="primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
