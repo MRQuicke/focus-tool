@@ -12,6 +12,8 @@
 html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
 body{padding-bottom:calc(var(--tab) + env(safe-area-inset-bottom) + 12px)}
 .topbar{position:sticky;top:0;z-index:5;padding:calc(env(safe-area-inset-top) + 12px) 20px 10px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:baseline;gap:10px;max-width:900px;margin:auto}
+.syncbtn{margin-left:auto;font-size:13px;padding:5px 11px;border-radius:99px;color:var(--muted)}
+#syncOut[style*="flex"]{display:flex!important}
 h1{margin:0;font-size:28px;letter-spacing:-.5px}
 .sub{color:var(--muted);font-size:14px}
 main{max-width:900px;margin:auto;padding:4px 16px}

@@ -20,7 +20,48 @@ function load() {
   };
   try { return Object.assign(def, JSON.parse(localStorage.getItem(KEY))); } catch { return def; }
 }
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
+
+/* ---------- Sync support (see sync.js) ---------- */
+// Every task carries an updatedAt stamp; deletions leave a tombstone so they propagate between devices.
+S.tombs = S.tombs || {};
+const ser = ({ updatedAt, ...rest }) => JSON.stringify(rest);
+let lastSer = {}, lastSettings = JSON.stringify(S.settings);
+S.tasks.forEach(t => { if (!t.updatedAt) t.updatedAt = t.created || Date.now(); lastSer[t.id] = ser(t); });
+function stamp() {
+  const now = Date.now(), ids = new Set();
+  for (const t of S.tasks) {
+    ids.add(t.id);
+    const s = ser(t);
+    if (lastSer[t.id] !== s) { t.updatedAt = now; lastSer[t.id] = s; }
+  }
+  for (const id in lastSer) if (!ids.has(id)) { S.tombs[id] = now; delete lastSer[id]; }
+  const st = JSON.stringify(S.settings);
+  if (st !== lastSettings) { S.settingsAt = now; lastSettings = st; }
+}
+function save() { stamp(); persist(); if (window.Sync) Sync.push(); }
+const sigOf = d => JSON.stringify([(d.tasks || []).map(t => [t.id, t.updatedAt]).sort(), Object.entries(d.tombs || {}).sort(), Object.entries(d.sessions || {}).sort(), d.settingsAt || 0]);
+const payload = () => ({ tasks: S.tasks, tombs: S.tombs, sessions: S.sessions, settings: S.settings, settingsAt: S.settingsAt || 0, updatedAt: Date.now() });
+function mergeRemote(r) {
+  const before = sigOf(S), map = new Map(S.tasks.map(t => [t.id, t]));
+  for (const t of r.tasks || []) { const l = map.get(t.id); if (!l || (t.updatedAt || 0) > (l.updatedAt || 0)) map.set(t.id, t); }
+  for (const [id, ts] of Object.entries(r.tombs || {})) if (ts > (S.tombs[id] || 0)) S.tombs[id] = ts;
+  const cutoff = Date.now() - 60 * 864e5;
+  for (const id in S.tombs) if (S.tombs[id] < cutoff) delete S.tombs[id];
+  S.tasks = [...map.values()].filter(t => !(S.tombs[t.id] >= (t.updatedAt || 0)));
+  for (const [d, n] of Object.entries(r.sessions || {})) S.sessions[d] = Math.max(S.sessions[d] || 0, n);
+  if ((r.settingsAt || 0) > (S.settingsAt || 0)) { S.settings = Object.assign({}, S.settings, r.settings); S.settingsAt = r.settingsAt; }
+  lastSer = {}; S.tasks.forEach(t => lastSer[t.id] = ser(t)); lastSettings = JSON.stringify(S.settings);
+  persist();
+  return { changed: sigOf(S) !== before, needsPush: sigOf(S) !== sigOf(r) };
+}
+function afterRemote() {
+  if (dlg.open) return;
+  const a = document.activeElement;
+  if (a && view.contains(a) && /INPUT|SELECT/.test(a.tagName)) return;
+  render();
+}
+window.App = { mergeRemote, payload, afterRemote };
 
 /* ---------- Helpers ---------- */
 function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }

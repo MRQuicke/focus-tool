@@ -15,7 +15,7 @@
 <title>Focus – Productivity</title>
 </head>
 <body>
-<header class="topbar"><h1 id="title">Tasks</h1><span id="sub" class="sub"></span></header>
+<header class="topbar"><h1 id="title">Tasks</h1><span id="sub" class="sub"></span><button id="syncBtn" class="syncbtn">☁︎ Sync</button></header>
 <main id="view"></main>
 
 <nav class="tabbar" id="tabbar">
@@ -44,6 +44,24 @@
   </form>
 </dialog>
 
+<dialog id="syncDlg">
+  <form method="dialog" id="syncForm" onsubmit="return false">
+    <h2>Sync</h2>
+    <p id="syncMsg" class="sub"></p>
+    <div id="syncIn" style="display:flex;flex-direction:column;gap:12px">
+      <input type="email" name="email" placeholder="Email" autocomplete="username" required>
+      <input type="password" name="password" placeholder="Password (6+ characters)" autocomplete="current-password" required minlength="6">
+      <div class="actions"><button type="button" id="syncSignUp">Create account</button><span class="grow"></span><button type="button" id="syncSignIn" class="primary">Sign in</button></div>
+    </div>
+    <div id="syncOut" style="display:none;flex-direction:column;gap:12px">
+      <div>Signed in as <b id="syncUser"></b></div>
+      <div class="actions"><button type="button" id="syncSignOut" class="danger">Sign out</button></div>
+    </div>
+    <div class="actions"><span class="grow"></span><button type="button" id="syncClose">Close</button></div>
+  </form>
+</dialog>
+
 <script src="app.js"></script>
+<script type="module" src="sync.js"></script>
 </body>
 </html>
